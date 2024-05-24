@@ -1,0 +1,155 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel 11 Sample API",
+        "description": "By L5 Swagger OpenApi description",
+        "contact": {
+            "email": "samit@email.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0",
+        "x-logo": {
+            "url": "https://via.placeholder.com/190x90.png?text=L5-Swagger"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Laravel 11 with Sanctum API"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registrate",
+                "operationId": "Register",
+                "requestBody": {
+                    "description": "Input data format",
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "fullname": {
+                                        "description": "Enter your fullname",
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "description": "Enter your username",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Enter your Email",
+                                        "type": "email"
+                                    },
+                                    "password": {
+                                        "description": "Enter your password",
+                                        "type": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Enter your password confirmation",
+                                        "type": "password"
+                                    },
+                                    "tel": {
+                                        "description": "Enter your tel",
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "description": "Enter your role",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authentificate",
+                "operationId": "Login",
+                "requestBody": {
+                    "description": "Input data format",
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "Enter your email",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Enter password",
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "All products",
+                "description": "Multiple status values can be provided with comma separated string",
+                "operationId": "findPetsByStatus",
+                "parameters": [
+                    {
+                        "name": "products",
+                        "in": "query",
+                        "description": "All products",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "available",
+                            "enum": [
+                                "available",
+                                "pending",
+                                "sold"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
+        }
+    }
+}

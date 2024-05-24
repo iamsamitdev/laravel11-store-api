@@ -1,0 +1,1322 @@
+================================
+💡 Workshop Laravel 11 with Vue 3  💡
+================================
+
+⚡ DAY 1
+1.Setup Tools
+2.What new in Laravel 11
+3.Setup Project
+4.PostgreSQL/MySQL Connect
+5.API Controller & Methods
+-------------------------------------------------------
+🚀1. การเตรียมเครื่องมือและความพร้อม
+💻 XAMPP & PHP 8.2.x
+---
+php -v
+
+💻 MySQL / MariaDB
+---
+mysql --version
+
+💻 Node JS 18.x and up
+---
+node -v
+npm -v
+ppx -v
+
+💻 Composer
+---
+composer --version
+
+💻 PostgreSQL 15 and up
+---
+psql --version
+
+💻 Git
+---
+git version
+
+💻 VSCode
+---
+code -v
+
+🚀 2.What new in Laravel 11
+---
+- การยกเลิกการรองรับ PHP 8.1 เพื่อรองรับเวอร์ชัน PHP ที่ใหม่กว่า
+- โครงสร้างแอปพลิเคชันที่กะทัดรัดมากขึ้นโดยลดไฟล์และโค้ดที่ซ้ำซ้อน
+- คุณสมบัติ Dumpable Trait ใหม่ที่ช่วยในการดีบั๊ก
+- การเปลี่ยนแปลงวิธีการระบุ Model Casts จากพร็อพเพอร์ตี้เป็นวิธีการ
+- การรวมการตั้งค่าคอนฟิกจากหลายไฟล์เป็นหนึ่งไฟล์ .env
+- การรวมไฟล์ไมเกรชันมาตรฐานเหลือเพียง 2 ไฟล์
+- การลบ Console Kernel และย้ายคำสั่ง Artisan มาไว้ใน routes/console.php
+- การเปลี่ยนแปลงเกี่ยวกับไฟล์ routes สำหรับ API และ Websockets
+- ข้อดีในการอัปเกรดเป็น Laravel 11 เช่น ประสิทธิภาพที่ดีขึ้น, ประสบการณ์ผู้พัฒนาที่ดีขึ้น, การรักษาความปลอดภัย, เทมเพลต Blade ใหม่, ฟีเจอร์ใหม่ๆ
+
+🚀3.Setup Project
+---
+</> Server Prerequisites to Install Laravel 11
+
+PHP >= 8.2
+Ctype PHP Extension
+cURL PHP Extension
+DOM PHP Extension
+Fileinfo PHP Extension
+Filter PHP Extension
+Hash PHP Extension
+Mbstring PHP Extension
+OpenSSL PHP Extension
+PCRE PHP Extension
+PDO PHP Extension
+Session PHP Extension
+Tokenizer PHP Extension
+XML PHP Extension
+
+การติดตั้ง
+---
+</> ติดตั้งเวอร์ชั่นล่าสุด (11.x)
+💻 composer create-project  laravel/laravel  mylaravel11-app 
+
+หมายเหตุ ติดตั้งระบุเลข Version เฉพาะ
+💻 composer create-project laravel/laravel:^10.0 mylaravel10-app
+
+</> การรันโปรเจ็กต์
+---
+💻 php artisan serve
+ปกติจะรันอยู่ที่ http://127.0.0.1:8000
+
+หากต้องการ run ที่ port อื่น 
+💻php artisan serve  --port=9000
+
+</> Laravel Basic Routing
+---
+
+</> Basic Routing
+---
+
+Route::get('/', function () {
+    return 'Hello World!';
+});
+
+Route::get('about', function(){
+    return 'My about page';
+});
+
+</> Routing with Parameters
+---
+Route::get('user/{id}', function ($id) {
+    return 'User:' . $id;
+});
+
+Route::get('posts/{post}/comments/{comment}', function ($postID, $commentID) {
+    return 'Post:' . $postID . '<br>Comment:' . $commentID;
+});
+
+Route::get('member/{name?}', function ($name = null) {
+    return 'Hello' . $name;
+});
+
+</> Regular Expression Constraints
+---
+Route::get('category/{name}', function ($name) {
+    return $name;
+})->where('name', '[A-Za-z]+');
+
+Route::get('group/{id}', function ($id) {
+    return $id;
+})->where('id','[0-9]+');
+
+Route::get('product/{id}/{name}', function ($id, $name) {
+    return 'Product ID:'.$id.'<br>Product name:'.$name;
+})->where(['id' => '[0-9]+', 'name' => '[a-z]+']);
+
+</> Named Routes
+---
+Route::get('guest/showroom/data/{name?}',function($name=null){
+    return'Hello'.$name;
+})->name('guestprofile');
+
+Route post,put,delete
+---
+Route::post('user/profile',function(){
+    return'POST';
+});
+
+Route::put('user/profile',function(){
+    return'PUT';
+});
+
+Route::delete('user/profile',function(){
+    return'DELETE';
+});
+
+</> พื้นฐานการทำงานกับ Controller ใน Laravel 11
+---
+การสร้าง Controller ใหม่
+php artisan make:controller HomeController
+
+</> การเรียกใช้งาน Controller ใน routes (web.php)
+---
+Method 1:
+
+Route::get(
+  'profile’,
+  'App\Http\Controllers\HomeController@showprofile’
+);
+
+Method 2:
+
+use App\Http\Controllers\HomeController;
+
+Route::get(
+  'profile’,
+  [HomeController::class,'showprofile’]
+);
+
+</> Route Prefixes
+---
+Route::group(['prefix' => 'admin'], function () {
+    Route::get('users', function ()    {
+        // Matches The "/admin/users" URL
+    });
+});
+
+Route::group(['prefix' => 'accounts/{account_id}'], function () {
+    Route::get('detail', function ($account_id)    {
+        // Matches The accounts/{account_id}/detail URL
+    });
+});
+
+
+🚀4.PostgreSQL/MySQL Connect
+
+</> การทำงานกับฐานข้อมูล
+---
+เชื่อมต่อฐานข้อมูล PostgreSQL
+แก้ไขไฟล์ .env
+---
+# SQLite
+# DB_CONNECTION=sqlite
+
+# MySQL
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=laravel
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# PostgreSQL
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=samplelaraveldb
+DB_USERNAME=postgres
+DB_PASSWORD=123456
+
+</> คำสั่ง Running Migrations
+---
+💻 php artisan migrate
+
+</> สรุปคำสั่ง สร้าง migration และ db:seed พร้อมกัน
+---
+💻 php artisan migrate:fresh --seed
+
+</> การสร้าง API ใน Laravel 11
+---
+ติดตั้ง api
+---
+💻 php artisan install:api
+
+🚀5.API Controller & Methods
+
+</> ทดสอบเขียน api ที่ไฟล์ routes/api.php
+---
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
+
+// กำหนดตัวแปร $users
+$users = [
+    [
+        'name' => 'John Doe',
+        'email' => 'john@email.com',
+    ],
+    [
+        'name' => 'Jane Doe',
+        'email' => 'jane@email.com',
+    ]
+];
+
+// GET /api/user
+Route::get('/user',  function (Request $request) use ($users){
+    return $users;
+});
+
+// POST /api/user
+// Payload: { "name": "John Doe", "email": "john@email.com"}
+Route::post('/user', function (Request $request)  use ($users){
+    // Retrieve the name and email from the request body payload
+    $name = $request->input('name');
+    $email = $request->input('email');
+
+    // Add the new user to the users array
+    $users[] = [
+        'name' => $name,
+        'email' => $email,
+    ];
+
+    // Return the name and email
+    return $users;
+});
+
+// PUT /api/user/1
+// Payload: { "name": "Jack Doe", "email": "jack@email.com"}
+Route::put('/user/{id}', function (Request $request, $id) use ($users) {
+    // Retrieve the name and email from the request body payload
+    $name = $request->input('name');
+    $email = $request->input('email');
+
+    // Update the user with the given id
+    $users[$id] = [
+        'name' => $name,
+        'email' => $email,
+    ];
+
+    // Return the name and email
+    return $users;
+});
+
+// DELETE /api/user/1
+Route::delete('/user/{id}', function (Request $request, $id) use ($users) {
+    // Remove the user with the given id
+    unset($users[$id]);
+
+    // Return the name and email
+    return $users;
+});
+
+
+-------------------------------------------------------
+⚡ DAY 2
+1.Create Laravel Project for Rest API
+2.Sanctum package settings
+3.API Register, Login, Refresh, Logout
+4.Deploy Laravel Project to cloud
+-------------------------------------------------------
+🚀 1.Create Laravel Project for Rest API
+
+Step 1: สร้างโปรเจ็กต์ใหม่ใน Laravel 11
+💻 composer create-project  laravel/laravel laravel11-store-api
+
+Step 2: เปิดเข้า vscode
+💻 code laravel11-store-api -r
+
+Step 3: ทดสอบรันโปรเจ็กต์
+💻 php artisan serve
+
+Step 4: สร้างฐานข้อมูลใหม่ใน PostgreSQL "laravelstore"
+</> CREATE DATABASE laravelstore;
+
+Step 5: แก้ไขไฟล์ .env เพื่อ Connect ฐานข้อมูล PostgreSQL
+</>
+
+# PostgreSQL
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=laravelstore
+DB_USERNAME=postgres
+DB_PASSWORD=123456
+
+Step 6: สร้าง migration resource conrtroller and model
+💻 php artisan make:model --migration --controller Product --api
+
+จะได้ไฟล์ app/Http/Controllers/ProductController.php เป็นแบบ API
+
+และได้ไฟล์ database/migrations/2024_05_24_100645_create_products_table.php 
+
+Step 7: กำหนดโครงสร้าง migrations ที่ไฟล์ "xxx_create_users_table.php"
+
+public function up(): void
+{
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('fullname');
+            $table->string('username');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('tel');
+            $table->string('avatar')->nullable();
+            $table->tinyInteger('role')->default(1);
+            $table->rememberToken();
+            $table->timestamps();
+        });
+ }
+
+Step 8: กำหนดโครงสร้าง migrations ที่ไฟล์ "xxx_create_products_table.php"
+
+public function up()
+{
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug');
+            $table->string('description')->nullable();
+            $table->decimal('price',9, 2); // 2,859,893.50
+            $table->string('image')->nullable();
+            $table->unsignedBigInteger('user_id')->comment('Created By User');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->timestamps();
+        });
+}
+
+
+🚀 2.Sanctum package settings
+
+Step 9: ติดตั้ง api routes ใน Laravel 11
+💻 php artisan install:api
+
+One new database migration has been published. Would you like to run all pending database migrations? (yes/no) [yes]
+ตอบ yes เพื่อทำการ migrate ฐานข้อมูล
+
+จะได้ตารางทั้งหมด 11 ตารางในฐานข้อมูล
+cache
+cache_locks
+failed_jobs
+job_batches
+jobs
+migrations
+password_reset_tokens
+personal_access_tokens
+products
+sessions
+users
+
+หมายเหตุ หากมีการแก้ไข migration สามารถสั่งอัพรัน migrate ใหม่
+💻 php artisan migrate
+
+Step 10: เพิ่ม Laravel\Sanctum\HasApiTokens เข้าไปที่ User model
+</> app/Models/User.php
+
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'fullname',
+        'username',
+        'email',
+        'email_verified_at',
+        'password',
+        'tel',
+        'avatar',
+        'role',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Products Relationship
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class)->orderBy('id', 'desc');
+    }
+}
+
+
+Step 11: แก้ไข Product Model ที่ไฟล์ app/Models/Product.php 
+</>
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'price',
+        'image',
+        'user_id'
+    ];
+
+    /**
+     * Relationship to Users
+     */
+    public function users(){
+
+        // SELECT * 
+        // FROM products
+        // INNER JOIN users
+        // ON products.user_id = users.id;
+
+        return $this->belongsTo('App\Models\User','user_id')->select(['id','fullname','avatar']); 
+    }
+}
+
+🚀 3.API Register, Login, Refresh Token, Logout
+
+Step 12: สร้าง AuthController.php สำหรับไว้ทำ Register และ Login
+💻 php artisan make:controller AuthController --model=User
+
+Step 13: สร้าง Method register และ login ใน src\app\Http\Controllers\AuthController.php
+</>
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class AuthController extends Controller
+{
+    // Register User
+    public function register(Request $request){
+
+        // Validate field
+        $fields = $request->validate([
+            'fullname' => 'required|string',
+            'username' => 'required|string',
+            'email'=> 'required|string|unique:users,email',
+            'password'=>'required|string|confirmed',
+            'tel'=>'required',
+            'role'=> 'required|integer'
+        ]);
+
+        // Create user
+        $user = User::create([
+            'fullname' => $fields['fullname'],
+            'username' => $fields['username'],
+            'email' => $fields['email'],
+            'password' => bcrypt($fields['password']), 
+            'tel' => $fields['tel'],
+            'role' => $fields['role']
+        ]);
+
+        $response = [
+            'status' => true,
+            'message' => "User registered successfully",
+            'user' => $user,
+        ];
+
+        return response($response, 201);
+    }
+
+    // Login User
+    public function login(Request $request) {
+
+        // Validate field
+        $fields = $request->validate([
+            'email'=> 'required|string',
+            'password'=>'required|string'
+        ]);
+
+        // Check email
+        $user = User::where('email', $fields['email'])->first();
+
+        // Check password
+        if(!$user || !Hash::check($fields['password'], $user->password)) {
+            return response([
+                'status' => false,
+                'message' => 'Login failed'
+            ], 401);
+        }else{
+            
+            // ลบ token เก่าออกแล้วค่อยสร้างใหม่
+            $user->tokens()->delete();
+
+            // Create token
+            $token = $user->createToken($request->userAgent(), ["$user->role"])->plainTextToken;
+    
+            $response = [
+                'status' => true,
+                'message' => 'Login successfully',
+                'user' => $user,
+                'token' => $token
+            ];
+    
+            return response($response, 201);
+        }
+
+    }
+
+    // Refresh Token
+    public function refreshToken(Request $request) {
+        $user = $request->user();
+        $user->tokens()->delete();
+        $token = $user->createToken($request->userAgent(), ["$user->role"])->plainTextToken;
+        $response = [
+            'status' => true,
+            'message' => 'Token refreshed',
+            'user' => $user,
+            'token' => $token
+        ];
+        return response($response, 201);
+    }
+
+    // Logout User
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
+        return [
+            'status' => true,
+            'message' => 'Logged out'
+        ];
+    }
+}
+
+Step 14: แก้ไขไฟล์ src\routes\api.php เพิ่ม routes
+</>
+
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+
+// Route for register and login
+Route::post('register',[AuthController::class, 'register']);
+Route::post('login',[AuthController::class, 'login']);
+
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::post('refreshtoken', [AuthController::class, 'refreshToken']);
+    Route::post('logout',[AuthController::class, 'logout']);
+});
+
+Step 15: ทดสอบ Register และ Login/Logout API
+</>
+
+การ register
+---
+http://localhost:8000/api/register
+Method: POST
+PayLoad
+{
+    "fullname":"John Doe",
+    "username":"john",
+    "email":"john@email.com",
+    "password":"12345678",
+    "password_confirmation":"12345678",
+    "tel":"0881235678",
+    "role":"1"
+}
+
+ผลลัพธ์ที่ควรได้กลับมา
+---
+{
+  "status": true,
+  "message": "User registered successfully",
+  "user": {
+    "fullname": "John Doe",
+    "username": "john",
+    "email": "john@email.com",
+    "tel": "0881235678",
+    "role": "1",
+    "updated_at": "2024-05-24T11:28:09.000000Z",
+    "created_at": "2024-05-24T11:28:09.000000Z",
+    "id": 1
+  }
+}
+
+การ login
+---
+http://localhost:8000/api/login
+
+{
+    "email":"john@email.com",
+    "password":"12345678"
+}
+
+ผลลัพธ์ที่ควรได้กลับมา
+---
+{
+  "status": true,
+  "message": "Login successfully",
+  "user": {
+    "id": 1,
+    "fullname": "John Doe",
+    "username": "john",
+    "email": "john@email.com",
+    "email_verified_at": null,
+    "tel": "0881235678",
+    "avatar": null,
+    "role": 1,
+    "created_at": "2024-05-24T11:28:09.000000Z",
+    "updated_at": "2024-05-24T11:28:09.000000Z"
+  },
+  "token": "2|PMZLAaTCBgvIBkxVK7y3ZcxLHpqk9rETmQmoWUVle5e2e9c7"
+}
+
+Step 16: แก้ไข Product Controller ที่ไฟล์ app/Http/Controllers/ProductController.php
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    // อ่านรายการสินค้าทั้งหมด
+    public function index()
+    {
+        // Read all products
+        return Product::all();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // เช็คสิทธิ์ (role) ว่าเป็น admin (1) 
+        $user = auth()->user();
+
+        if ($user->tokenCan("1")) {
+
+            // Validate form
+            $request->validate([
+                'name' => 'required|min:3',
+                'slug' => 'required',
+                'price' => 'required'
+            ]);
+
+            // กำหนดตัวแปรรับค่าจากฟอร์ม
+            $data_product = array(
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'slug' => $request->input('slug'),
+                'price' => $request->input('price'),
+                'user_id' => $user->id
+            );
+
+            // Create data to tabale product
+            $product = Product::create($data_product);
+
+            $response = [
+                'status' => true,
+                'message' => "Product created successfully",
+                'product' => $product,
+            ];
+
+            return response($response, 201);
+
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Permission denied to create'
+            ], 401);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $product = Product::find($id);
+
+        if ($product) {
+            return response([
+                'status' => true,
+                'product' => $product
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // เช็คสิทธิ์ (role) ว่าเป็น admin (1) 
+        $user = auth()->user();
+
+        if ($user->tokenCan("1")) {
+
+            $request->validate([
+                'name' => 'required',
+                'slug' => 'required',
+                'price' => 'required'
+            ]);
+
+            $data_product = array(
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'slug' => $request->input('slug'),
+                'price' => $request->input('price'),
+                'user_id' => $user->id
+            );
+
+            $product = Product::find($id);
+            $product->update($data_product);
+
+            return response([
+                'status' => true,
+                'message' => 'Product updated successfully',
+                'product' => $product
+            ]);
+
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Permission denied to create'
+            ], 401);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+
+        // เช็คสิทธิ์ (role) ว่าเป็น admin (1) 
+        $user = auth()->user();
+
+        if ($user->tokenCan("1")) {
+
+            $product = Product::destroy($id);
+
+            if ($product) {
+                return response([
+                    'status' => true,
+                    'message' => 'Product deleted successfully'
+                ]);
+            } else {
+                return response([
+                    'status' => false,
+                    'message' => 'Product not found'
+                ], 404);
+            }
+            
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Permission denied to create'
+            ], 401);
+        }
+
+    }
+}
+
+Step 17: แก้ไขไฟล์ src\routes\api.php เพิ่ม routes
+</>
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
+
+// Route for register and login
+Route::post('register',[AuthController::class, 'register']);
+Route::post('login',[AuthController::class, 'login']);
+
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::post('refreshtoken', [AuthController::class, 'refreshToken']);
+    Route::post('logout',[AuthController::class, 'logout']);
+    Route::resource('products', ProductController::class);
+});
+
+
+Step 18: ทดสอบเรียกใช้ product api
+</>
+
+http://localhost:8000/api/products
+
+Auth Bearer
+--
+6|FJqk9koWF45l9HyBpSMDcqMAJVpB66k4stuSWWy871b75c9e
+
+ผลลัพธ์ที่ควรได้กลับมา
+---
+Status: 200 OK
+[]
+
+Step 19: ทดสอบเพิ่มข้อมูลใน API products
+---
+http://localhost:8000/api/products
+
+Auth Bearer
+--
+Bearer 2|quRW74msH7dPP48SAD4rnuPEZ8bNN5suZf9XXHnH
+
+HTTP Method: POST
+
+Body:
+{
+    "name": "iPhone 12 Pro Max",
+    "slug": "iphone-12-pro-max",
+    "description": "iPhone 12 Pro Max detail",
+    "price": "38500.00"
+}
+
+ผลลัพธ์ที่ควรได้กลับมา
+---
+Status: 201 OK
+
+{
+  "status": true,
+  "message": "Product created successfully",
+  "product": {
+    "name": "iPhone 13 Pro Max",
+    "description": "iPhone 13 Pro Max detail",
+    "slug": "iphone-13-pro-max",
+    "price": "48500.00",
+    "user_id": 1,
+    "updated_at": "2024-05-24T11:55:38.000000Z",
+    "created_at": "2024-05-24T11:55:38.000000Z",
+    "id": 2
+  }
+}
+
+Step 20: ทดสอบเรียก API products สำหรับการแก้ไข
+---
+
+http://localhost:8000/api/products/1
+
+Auth Bearer
+--
+Bearer 2|quRW74msH7dPP48SAD4rnuPEZ8bNN5suZf9XXHnH
+
+HTTP Method: PUT
+
+Body:
+{
+    "name": "iPad Pro 2024",
+    "slug": "ipad-pro-2024",
+    "description": "iPad Pro 2024 detail",
+    "price": "45000.00"
+}
+
+Step 21: ทดสอบเรียก API products สำหรับการลบ
+---
+
+http://localhost:8100/api/products/1
+
+Auth Bearer
+--
+Bearer 2|quRW74msH7dPP48SAD4rnuPEZ8bNN5suZf9XXHnH
+
+HTTP Method: DELETE
+
+Step 22: การติดตั้ง Document API (Swagger)
+---
+Install Swagger
+---
+💻 composer require darkaonline/l5-swagger
+
+Publish Config File
+---
+💻 php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+
+Generate Swagger Document
+---
+💻 php artisan l5-swagger:generate
+
+Example annotations
+---
+/**
+ * @OA\Info(
+ *    title="Your super  ApplicationAPI",
+ *    version="1.0.0",
+ * )
+ */
+
+# REGISTER API #
+
+/**
+* @OA\Post(
+* path="/api/register",
+* operationId="Register",
+* tags={"Register"},
+* summary="User Register",
+* description="User Register here",
+*     @OA\RequestBody(
+*         @OA\JsonContent(),
+*         @OA\MediaType(
+*            mediaType="multipart/form-data",
+*            @OA\Schema(
+*               type="object",
+*               required={"name","email", "password", "password_confirmation"},
+*               @OA\Property(property="name", type="text"),
+*               @OA\Property(property="email", type="text"),
+*               @OA\Property(property="password", type="password"),
+*               @OA\Property(property="password_confirmation", type="password")
+*            ),
+*        ),
+*    ),
+*      @OA\Response(
+*          response=201,
+*          description="Register Successfully",
+*          @OA\JsonContent()
+*       ),
+*      @OA\Response(
+*          response=200,
+*          description="Register Successfully",
+*          @OA\JsonContent()
+*       ),
+*      @OA\Response(
+*          response=422,
+*          description="Unprocessable Entity",
+*          @OA\JsonContent()
+*       ),
+*      @OA\Response(response=400, description="Bad request"),
+*      @OA\Response(response=404, description="Resource Not Found"),
+* )
+*/
+
+# LOGIN API #
+
+/**
+* @OA\Post(
+*     path="/api/login",
+*     operationId="Login",
+*     tags={"Login"},
+*     summary="User Login",
+*     description="User Login here",
+*     @OA\RequestBody(
+*         required=true,
+*         @OA\MediaType(
+*            mediaType="multipart/form-data",
+*            @OA\Schema(
+*               type="object",
+*               required={"email", "password"},
+*               @OA\Property(property="email", type="string", example="sanjay@gmail.com"),
+*               @OA\Property(property="password", type="string", example="123456"),
+*            ),
+*        ),
+*        @OA\MediaType(
+*            mediaType="application/json",
+*            @OA\Schema(
+*               type="object",
+*               required={"email", "password"},
+*               @OA\Property(property="email", type="string", example="sanjay@gmail.com"),
+*               @OA\Property(property="password", type="string", example="123456"),
+*            ),
+*        ),
+*    ),
+*    @OA\Response(
+*        response=201,
+*        description="Login Successfully",
+*        @OA\JsonContent()
+*    ),
+*    @OA\Response(
+*        response=200,
+*        description="Login Successfully",
+*        @OA\JsonContent()
+*    ),
+*    @OA\Response(
+*        response=422,
+*        description="Unprocessable Entity",
+*        @OA\JsonContent()
+*    ),
+*    @OA\Response(response=400, description="Bad request"),
+*    @OA\Response(response=404, description="Resource Not Found"),
+* )
+*/
+
+🚀 4.Deploy Laravel Project to cloud
+
+Laravel 11 Vue 3 with Docker Script
+———————————————————————————
+Step 1: กำหนดโครงสร้างโปรเจ็กต์ดังนี้
+----
+Laravel11
+├── mysql
+│   └── data
+├── nginx
+│   └── conf
+│       └── app.conf
+├── php
+│   └── Dockerfile
+├── src
+│   ├── app
+│   │   ├── Console
+│   │   │   └── Kernel.php
+│   │   ├── Exceptions
+│   │   │   └── Handler.php
+│   │   ├── Http
+│   │   │   ├── Controllers
+│   │   │   │   ├── Auth
+│   │   │   │   ├── Controller.php
+│   │   │   │   └── HomeController.php
+│   │   │   ├── Kernel.php
+│   │   │   └── Middleware
+│   │   ├── Providers
+│   │   └── Models
+│   │       └── User.php
+│   ├── bootstrap
+│   │   ├── app.php
+│   ├── config
+│   │   ├── app.php
+│   ├── database
+│   │   ├── factories
+│   │   ├── migrations
+│   │   └── seeds
+│   ├── public
+│   │   ├── .htaccess
+│   │   ├── favicon.ico
+│   │   ├── index.php
+│   │   └── robots.txt
+│   ├── resources
+│   ├── routes
+│   │   ├── api.php
+│   │   ├── channels.php
+│   │   ├── console.php
+│   │   ├── web.php
+│   ├── storage
+│   │   ├── app
+│   │   ├── framework
+│   │   ├── logs
+│   ├── tests
+│   ├── vendor
+│   ├── .editorconfig
+│   ├── .env
+│   ├── .env.example
+│   ├── .gitattributes
+│   ├── .gitignore
+│   ├── artisan
+│   ├── composer.json
+│   ├── composer.lock
+│   ├── package.json
+│   ├── phpunit.xml
+│   ├── server.php
+│   └── webpack.mix.js
+├── .gitignore
+├── docker-compose.yaml
+└── readme.md
+
+Step 2:  Clone ตัว Laravel 11 มาใส่ใน src
+---
+git clone https://github.com/laravel/laravel.git src
+
+Step 3: กำหนด Image ใน Dockerfile
+---
+# โหลด Base Image PHP 8.2
+FROM php:8.2-fpm-buster
+
+# ติดตั้ง Exention bcmath และ pdo_mysql
+RUN docker-php-ext-install bcmath pdo_mysql
+
+# สั่ง update image และ ติดตั้ง git zip และ unzip pacakage
+RUN apt-get update
+RUN apt-get install -y git zip unzip
+
+# ติดตั้ง NodeJS
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - 
+RUN apt-get install -y nodejs
+
+# Copy file composer:latest ไว้ที่ /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www
+
+EXPOSE 9000
+
+หากต้องการรู้ว่าภายใน php:8.2-fpm-buster มี module อะไรอยู่บ้าง
+--
+docker run php:8.2-fpm-buster php -m
+
+
+Step 4: กำหนดส่วนของ nginx setting
+---
+server {
+    listen 80;
+    index index.php index.html;
+    error_log /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    root /var/www/public;
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+        gzip_static on;
+    }
+}
+
+Step 5: กำหนดส่วนของ docker-compose.yaml
+---
+version: '3.9'
+
+# Network for Laravel 11
+networks:
+  web_network:
+    name: laravel11
+    driver: bridge
+
+services:
+
+  # MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: laravel11_mysql
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=laravel11db
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=1234
+    ports:
+      - "3336:3306"
+    restart: always
+    networks:
+      - web_network
+
+  # PHP App Service 
+  app:
+    depends_on:
+      - db
+    build: ./php
+    image: laravel11-app
+    container_name: laravel11_app
+    restart: always
+    volumes:
+      - ./src:/var/www
+    networks:
+      - web_network
+
+  # Nginx Web Server Service
+  nginx:
+    depends_on:
+      - app
+    image: nginx:1.19.8-alpine
+    container_name: laravel11_nginx
+    volumes:
+      - ./src:/var/www
+      - ./nginx/conf:/etc/nginx/conf.d
+    ports:
+      - "8088:80"
+    restart: always
+    networks:
+      - web_network
+
+  # phpMyAdmin (MySQL managment)
+  phpmyadmin:
+    image: phpmyadmin:5.1.0-apache
+    depends_on:
+      - db
+    container_name: laravel11_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "8200:80"
+    restart: always
+    networks:
+      - web_network
+
+เช็คความเรียบร้อยของ docker-compose
+---
+docker-compose config -q
+
+Step 6: สั่ง docker-compose up -d
+---
+docker-compose up -d
+
+ลองเช็คสถานะด้วยคำสั่ง
+---
+docker-compose ps
+
+Step 7:  เรียกเข้าไปติดตั้ง library ของ laravel ใน service "app"
+---
+docker-compose exec app composer install
+
+Step 8: เพิมไฟล์ .env โดยคัดลอกโค้ดทั้งหมดจาก .env.example มาใส่
+
+Step 9: ทำการ Generate ตัว APP_KEY
+--
+docker-compose exec app php artisan key:generate
+
+Step 10: Config Database ที่ไฟล์ .env
+---
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=laravel11db
+DB_USERNAME=admin
+DB_PASSWORD=1234
+
+Step 11: ทำการ Run Migration (สร้างฐานและตารางให้อัตโมัติ)
+---
+เบื้องต้นให้ใช้คำสั่ง clear config ของไฟล์ .env
+docker-compose exec app php artisan config:clear
+
+คำสั่ง migrate database
+---
+docker-compose exec app php artisan migrate
+
+จากนั้นก็ clear cach
+---
+docker-compose exec app php artisan config:clear
